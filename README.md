@@ -2,7 +2,7 @@
 
 > Replace `OWNER/REPO` after publishing this project to GitHub.
 >
-> ![Tests](https://github.com/OWNER/REPO/actions/workflows/tests.yml/badge.svg)
+> ![Tests](https://github.com/jonavm/cryptoinsight/actions/workflows/tests.yml/badge.svg)
 
 CryptoInsight is a market intelligence MVP for crypto monitoring. It ingests public market data, stores historical snapshots in PostgreSQL, exposes a FastAPI backend, and renders an operational dashboard in Streamlit.
 
