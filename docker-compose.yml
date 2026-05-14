@@ -1,0 +1,83 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: crypto-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    container_name: crypto-api
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: /app
+    command: >
+      uvicorn app.main:app --host ${API_HOST:-0.0.0.0} --port ${API_PORT:-8000}
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    container_name: crypto-migrate
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: /app
+    command: python -m scripts.init_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  ingestion:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    container_name: crypto-ingestion
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: /app
+    command: python -m scripts.run_ingestion
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    container_name: crypto-dashboard
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: /app
+    command: >
+      streamlit run dashboard/streamlit_app.py
+      --server.address 0.0.0.0
+      --server.port ${STREAMLIT_PORT:-8501}
+    ports:
+      - "${STREAMLIT_PORT:-8501}:8501"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:

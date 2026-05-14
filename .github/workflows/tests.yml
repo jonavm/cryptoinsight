@@ -1,0 +1,61 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+      - "feature/**"
+  pull_request:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: .
+      PROJECT_NAME: real-time-crypto-data-platform
+      APP_ENV: ci
+      LOG_LEVEL: INFO
+      POSTGRES_DB: crypto_platform
+      POSTGRES_USER: crypto_user
+      POSTGRES_PASSWORD: crypto_password
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: "5432"
+      COINGECKO_BASE_URL: https://api.coingecko.com/api/v3
+      COINGECKO_VS_CURRENCY: usd
+      COINGECKO_ASSET_IDS: bitcoin,ethereum,solana
+      INGESTION_INTERVAL_SECONDS: "300"
+      ALERT_PRICE_MOVE_PCT: "3.0"
+      ALERT_PRICE_MOVE_HIGH_PCT: "5.0"
+      ALERT_VOLATILITY_PCT: "2.0"
+      ALERT_VOLUME_SPIKE_RATIO: "1.5"
+      ALERT_VOLUME_SPIKE_HIGH_RATIO: "2.5"
+      ALERT_FEED_LAG_WARN_MULTIPLIER: "2.0"
+      ALERT_FEED_LAG_HIGH_MULTIPLIER: "4.0"
+      ALERT_RULES_BY_ASSET: '{"bitcoin":{"price_move_pct":2.0},"ethereum":{"volatility_pct":1.5}}'
+      API_HOST: 0.0.0.0
+      API_PORT: "8000"
+      API_BASE_URL: http://api:8000
+      STREAMLIT_PORT: "8501"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Compile Python modules
+        run: python -m py_compile app/main.py dashboard/streamlit_app.py dashboard/api_client.py dashboard/formatters.py dashboard/ui.py dashboard/views.py
+
+      - name: Import application modules
+        run: python -c "import app.main; import dashboard.api_client; import dashboard.formatters; import dashboard.ui; import dashboard.views"
+
+      - name: Run test suite
+        run: pytest -q
