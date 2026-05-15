@@ -11,11 +11,35 @@ The project is built to answer three questions:
 - What is happening with a specific asset
 - Is the data pipeline healthy enough to trust the screen
 
+## Screenshots
+
+### Overview
+
+Shows the main operating surface: market status, KPIs, feed health, and the current market scan.
+
+![CryptoInsight overview](docs/screenshots/overview.png)
+
+### Asset detail
+
+Shows the selected asset window, historical price path, and derived analytics such as change and rolling volatility.
+
+![CryptoInsight asset detail](docs/screenshots/asset-detail.png)
+
+### Alerts
+
+Shows rule-based signals with observed values, thresholds, and short severity explanations.
+
+![CryptoInsight alerts](docs/screenshots/alerts.png)
+
+### Settings
+
+Shows runtime configuration and per-asset alert threshold overrides stored in PostgreSQL.
+
+![CryptoInsight settings](docs/screenshots/settings.png)
+
 ## Why this project exists
 
-Most portfolio crypto dashboards stop at one of two extremes: a thin wrapper over a public API, or a visual mockup with little backend substance.
-
-This project takes the middle path. It keeps the product scope small, but it treats ingestion, persistence, API contracts, alerting, observability, and UI structure as first-class concerns.
+Many crypto dashboard projects cover only the fetch-and-display layer. This one adds historical storage, backend contracts, alerting, observability, and a dashboard organized around market reading rather than raw output.
 
 ## What it does today
 
@@ -77,11 +101,11 @@ The API is optimized for reads, while ingestion is responsible for external fetc
 
 ### Store immutable snapshots
 
-Historical snapshots make analytics and alerting simpler. They preserve the state of the market at a point in time, which is more useful than overwriting a single current-price row.
+Historical snapshots make analytics and alerting simpler. They preserve the state of the market at a point in time, which is more useful here than overwriting a single current-price row.
 
 ### Keep the dashboard behind the API
 
-The dashboard talks to FastAPI instead of PostgreSQL directly. That keeps the presentation layer coupled to a contract, not to the storage model.
+The dashboard talks to FastAPI instead of PostgreSQL directly. That keeps the presentation layer aligned with an API contract instead of the storage model.
 
 ### Treat observability as product data
 
@@ -248,7 +272,7 @@ CI:
 - CoinGecko is the only live source currently wired into ingestion
 - Watchlist is shared for the local MVP, not user-specific
 - Alerting is rule-based, not predictive
-- Streamlit gives speed and clarity, but not the control of a dedicated frontend
+- Streamlit is fast to iterate on, although it offers less control than a dedicated frontend
 
 ## What I would build next
 
@@ -260,7 +284,7 @@ CI:
 
 ## Project status
 
-This is no longer a mockup. It is a working MVP with:
+The current build already covers:
 - ingestion
 - persistence
 - API contracts
@@ -270,4 +294,4 @@ This is no longer a mockup. It is a working MVP with:
 - persistent product state
 - automated tests
 
-That combination is the point of the project.
+That scope is enough to discuss architecture, data flow, backend contracts, and product tradeoffs from a real implementation.
