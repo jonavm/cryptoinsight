@@ -9,6 +9,12 @@ The project is built to answer three questions:
 - What is happening with a specific asset
 - Is the data pipeline healthy enough to trust the screen
 
+## Why I built this
+
+I follow the crypto market closely and wanted a tool that was useful beyond a price check.
+
+This project started as a way to track market state, asset behavior, and feed reliability in one place. It also gave me a practical way to work through ingestion, historical storage, API design, alerting, observability, and dashboard delivery in a single system.
+
 ## Screenshots
 
 ### Overview
